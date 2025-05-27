@@ -10,9 +10,9 @@ const DB_NAME = 'url_shortener';
 
 // Step 1: Initial connection (without selecting database)
 const rootDb = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'Msiddu@1947',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
 });
 
 rootDb.connect((err) => {
@@ -32,10 +32,10 @@ rootDb.connect((err) => {
 
     // Step 3: Connect using the newly created database
     const db = mysql.createConnection({
-      host: 'localhost',
-      user: 'root',
-      password: 'Msiddu@1947',
-      database: DB_NAME,
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
     });
 
     db.connect((err) => {
@@ -98,7 +98,7 @@ rootDb.connect((err) => {
             const insertSql = 'INSERT INTO urls_generator (long_url, short_code) VALUES (?, ?)';
             db.query(insertSql, [long_url, short_code], (err) => {
               if (err) return res.status(500).json({ message: 'Insert error' });
-              res.json({ short_url: `https://urlshortenerbyshivateja.netlify.app/` });
+              res.json({ short_url: `https://urlshortenerbyshivateja.netlify.app/${short_code}` });
             });
           });
         });
@@ -120,7 +120,7 @@ rootDb.connect((err) => {
 
         const PORT = 5000;
         app.listen(PORT, () => {
-          console.log(`Server running on https://urlshortenerbyshivateja.netlify.app/`);
+          console.log(`Server running on http://localhost:${PORT}`);
         });
       });
     });
