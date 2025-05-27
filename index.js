@@ -2,10 +2,12 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://urlshortenerbyshivateja.netlify.app',
+}));
 app.use(express.json());
 
-const urlMap = {}; // in-memory store for short_code -> long_url
+const urlMap = {}; // In-memory store for short_code -> long_url
 
 const generateShortCode = () => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -33,7 +35,10 @@ app.post('/api/shorten', (req, res) => {
   const short_code = getUniqueShortCode();
   urlMap[short_code] = long_url;
 
-  res.json({ short_url: `http://localhost:5000/${short_code}` });
+  // Dynamically build base URL (works on Render or local)
+  const baseUrl = process.env.REACT_APP_BACKEND_URL || `${req.protocol}://${req.get('host')}`;
+
+  res.json({ short_url: `${baseUrl}/${short_code}` });
 });
 
 app.get('/:short_code', (req, res) => {
@@ -51,7 +56,7 @@ app.get('/', (req, res) => {
   res.send('🎉 URL Shortener API is running without DB!');
 });
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(`✅ Server running at https://ur-shortener-backend.onrender.com`);
 });
